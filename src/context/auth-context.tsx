@@ -26,15 +26,25 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => {} 
 });
 
+const AUTH_SESSION_KEY = 'emerald-health-user';
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<MockUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Simulate an initial authentication check.
+  // Check for a user session when the app loads.
   useEffect(() => {
-    // In a real app, you might check localStorage or sessionStorage for a token.
-    // For this prototype, we'll just start with no user.
-    setLoading(false);
+    try {
+        const storedUser = sessionStorage.getItem(AUTH_SESSION_KEY);
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
+    } catch (error) {
+        console.error("Failed to parse user from sessionStorage", error);
+        setUser(null);
+    } finally {
+        setLoading(false);
+    }
   }, []);
 
   // Mock login function
@@ -46,11 +56,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       displayName: email.split('@')[0], // Create a display name from the email
       photoURL: null, // No photo for mock users
     };
+    sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(mockUser));
     setUser(mockUser);
   };
 
   // Mock logout function
   const logout = () => {
+    sessionStorage.removeItem(AUTH_SESSION_KEY);
     setUser(null);
   };
 
