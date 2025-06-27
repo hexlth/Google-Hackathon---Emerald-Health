@@ -10,7 +10,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const FindPractitionersInputSchema = z.object({
+const FindPractitionersInputSchema = z.object({
   locationQuery: z
     .string()
     .describe(
@@ -27,7 +27,7 @@ const PractitionerSchema = z.object({
   isHospital: z.boolean().describe('Whether the practitioner is a hospital or a large clinic.')
 });
 
-export const FindPractitionersOutputSchema = z.object({
+const FindPractitionersOutputSchema = z.object({
   practitioners: z
     .array(PractitionerSchema)
     .describe('A list of medical practitioners found near the specified location.'),
