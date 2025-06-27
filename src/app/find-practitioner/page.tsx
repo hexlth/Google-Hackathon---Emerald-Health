@@ -1,10 +1,15 @@
+
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Stethoscope, Hospital, User, MapPin, Phone, CheckCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Stethoscope, Hospital, User, MapPin, Phone, CheckCircle, Search, Loader2, AlertCircle } from "lucide-react";
 
 // Mock data for practitioners
 const practitioners = [
@@ -63,77 +68,120 @@ const planLabels: { [key: string]: string } = {
 
 const getIconForSpecialty = (specialty: string) => {
     if (specialty.toLowerCase().includes('hospital')) {
-        return <Hospital className="h-6 w-6 text-muted-foreground" />;
+        return <Hospital className="h-5 w-5 text-muted-foreground" />;
     }
     if (specialty.toLowerCase().includes('practitioner')) {
-        return <Stethoscope className="h-6 w-6 text-muted-foreground" />;
+        return <Stethoscope className="h-5 w-5 text-muted-foreground" />;
     }
-    return <User className="h-6 w-6 text-muted-foreground" />;
+    return <User className="h-5 w-5 text-muted-foreground" />;
 }
 
 export default function FindPractitionerPage() {
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
+
+  const handleFindNearMe = () => {
+    setIsLoadingLocation(true);
+    setLocationError(null);
+    if (navigator.geolocation) {
+      // Simulate a delay for fetching location
+      setTimeout(() => {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            // In a real app, you would use these coordinates to fetch nearby practitioners
+            console.log("Lat:", position.coords.latitude, "Lng:", position.coords.longitude);
+            setIsLoadingLocation(false);
+            // Here you would filter or re-fetch practitioners based on location
+          },
+          (error) => {
+            setLocationError("Could not access your location. Please enable location permissions in your browser settings.");
+            setIsLoadingLocation(false);
+          }
+        );
+      }, 1500);
+    } else {
+      setLocationError("Geolocation is not supported by your browser.");
+      setIsLoadingLocation(false);
+    }
+  };
+
   return (
-    <div className="container mx-auto py-10">
-      <div className="space-y-4 mb-8 text-center">
-        <h1 className="text-3xl font-bold font-headline">Find a Medical Practitioner</h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto">Search for GPs, clinics, and specialists across Ireland. We'll help you find the right care, close to home.</p>
-        <div className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto">
-          <Input placeholder="Enter your location (e.g., Dublin, Cork)" className="flex-1" />
-          <Select>
-            <SelectTrigger className="w-full md:w-[280px]">
-              <SelectValue placeholder="Filter by Health Plan" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Plans</SelectItem>
-              <SelectItem value="public">Public Health Service</SelectItem>
-              <SelectItem value="medical-card">Medical Card</SelectItem>
-              <SelectItem value="private">Private Insurance</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button>Search</Button>
+    <div className="flex flex-col md:grid md:grid-cols-12 h-[calc(100vh-4rem)]">
+      {/* Left Panel: Search and List */}
+      <div className="md:col-span-4 lg:col-span-4 xl:col-span-3 border-r flex flex-col">
+        <div className="p-4 space-y-4 border-b">
+          <h1 className="text-2xl font-bold font-headline">Find Care</h1>
+          <div className="flex gap-2">
+            <Input placeholder="Search location or practitioner" className="flex-1" />
+            <Button variant="outline"><Search className="w-4 h-4" /></Button>
+          </div>
+          <Button className="w-full" onClick={handleFindNearMe} disabled={isLoadingLocation}>
+            {isLoadingLocation ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <MapPin className="mr-2 h-4 w-4" />
+            )}
+            Find Near Me
+          </Button>
+          {locationError && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Location Error</AlertTitle>
+              <AlertDescription>{locationError}</AlertDescription>
+            </Alert>
+          )}
         </div>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {practitioners.map((p, index) => (
-          <Card key={index} className="flex flex-col hover:shadow-lg transition-shadow duration-300">
-            <CardHeader className="flex flex-row items-start gap-4">
-              <Avatar className="w-16 h-16 border">
-                <AvatarImage src={p.avatar} alt={p.name} data-ai-hint={p.avatarHint} />
-                <AvatarFallback>{getIconForSpecialty(p.specialty)}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <CardTitle>{p.name}</CardTitle>
-                <CardDescription>{p.specialty}</CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3 flex-1">
-              <div className="flex items-start gap-2 text-sm">
-                <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
-                <span>{p.address}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
-                <span>{p.phone}</span>
-              </div>
-              <div className="flex items-start gap-2 text-sm">
-                 <CheckCircle className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
-                 <div>
-                    <h4 className="font-medium">Plans Accepted</h4>
-                    <div className="flex flex-wrap gap-1 mt-1">
+
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4 space-y-4">
+            {practitioners.map((p, index) => (
+              <Card key={index} className="hover:shadow-md transition-shadow duration-200 cursor-pointer">
+                <CardHeader>
+                    <div className="flex items-start gap-4">
+                        <Avatar className="w-12 h-12 border">
+                            <AvatarImage src={p.avatar} alt={p.name} data-ai-hint={p.avatarHint} />
+                            <AvatarFallback>{getIconForSpecialty(p.specialty)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <CardTitle className="text-base">{p.name}</CardTitle>
+                            <CardDescription className="text-xs">{p.specialty}</CardDescription>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <div className="flex items-start gap-2 text-muted-foreground">
+                    <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
+                    <span>{p.address}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Phone className="h-4 w-4 shrink-0" />
+                    <span>{p.phone}</span>
+                  </div>
+                   <div className="flex flex-wrap gap-1 pt-2">
                         {p.plans.map(plan => (
-                            <Badge key={plan} variant="secondary">{planLabels[plan]}</Badge>
+                            <Badge key={plan} variant="secondary" className="text-xs">{planLabels[plan]}</Badge>
                         ))}
                     </div>
-                 </div>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button className="w-full">Ping Practitioner</Button>
-            </CardFooter>
-          </Card>
-        ))}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel: Map */}
+      <div className="hidden md:block md:col-span-8 lg:col-span-8 xl:col-span-9 relative bg-gray-200">
+         <Image
+            src="https://placehold.co/1600x1200.png"
+            layout="fill"
+            objectFit="cover"
+            alt="Map showing practitioner locations"
+            data-ai-hint="ireland map"
+         />
+         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
       </div>
     </div>
   )
 }
+
+    
