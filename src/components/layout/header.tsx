@@ -35,7 +35,7 @@ const Header = () => {
     { href: "/find-practitioner", label: "Find a Practitioner" },
   ];
 
-  const profileDialogContent = (
+  const profileDialog = (
     <DialogContent className="sm:max-w-[725px]">
       <DialogHeader className="text-center">
         <Avatar className="h-24 w-24 mx-auto mb-4 border-4 border-primary/20">
@@ -59,7 +59,7 @@ const Header = () => {
     )}>
       <div className="container flex h-16 items-center">
         {/* Left Section */}
-        <div className="flex flex-1 items-center justify-start">
+        <div className="flex items-center justify-start md:flex-1">
           <Link href="/" className="flex items-center space-x-2">
             <Stethoscope className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block">
@@ -69,7 +69,7 @@ const Header = () => {
         </div>
 
         {/* Center Section: Desktop Navigation */}
-        <nav className="hidden items-center space-x-6 text-sm font-medium md:flex">
+        <nav className="hidden items-center justify-center space-x-6 text-sm font-medium md:flex">
           {navLinks.map(link => (
             <Link key={link.href} href={link.href} className="transition-colors hover:text-primary text-foreground/60">
               {link.label}
@@ -90,7 +90,7 @@ const Header = () => {
                           <span className="sr-only">Profile</span>
                         </Button>
                       </DialogTrigger>
-                      {profileDialogContent}
+                      {profileDialog}
                     </Dialog>
                   </>
                 ) : (
@@ -145,7 +145,7 @@ const Header = () => {
                                   </Button>
                                 </SheetClose>
                               </DialogTrigger>
-                              {profileDialogContent}
+                              {profileDialog}
                             </Dialog>
                         </div>
                     ) : (
