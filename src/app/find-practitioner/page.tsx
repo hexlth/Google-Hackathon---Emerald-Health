@@ -14,7 +14,7 @@ const practitioners = [
     address: '123 O\'Connell Street, Dublin 1',
     phone: '+353 1 234 5678',
     avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'woman doctor',
+    avatarHint: 'friendly woman doctor',
     plans: ['public', 'medical-card', 'private'],
   },
   {
@@ -23,7 +23,7 @@ const practitioners = [
     address: '45 Fitzwilliam Square, Dublin 2',
     phone: '+353 1 876 5432',
     avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'building clinic',
+    avatarHint: 'modern clinic building',
     plans: ['private'],
   },
   {
@@ -32,7 +32,7 @@ const practitioners = [
     address: '78 Pearse Street, Cork',
     phone: '+353 21 456 7890',
     avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'man doctor',
+    avatarHint: 'smiling man doctor',
     plans: ['public', 'medical-card'],
   },
   {
@@ -41,7 +41,7 @@ const practitioners = [
     address: 'James\'s Street, Dublin 8',
     phone: '+353 1 410 3000',
     avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'hospital building',
+    avatarHint: 'large hospital exterior',
     plans: ['public', 'private'],
   },
   {
@@ -50,7 +50,7 @@ const practitioners = [
     address: '15 Main Street, Galway',
     phone: '+353 91 789 1234',
     avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'woman doctor',
+    avatarHint: 'pediatrician smiling child',
     plans: ['public', 'medical-card', 'private'],
   }
 ];
@@ -74,11 +74,11 @@ const getIconForSpecialty = (specialty: string) => {
 export default function FindPractitionerPage() {
   return (
     <div className="container mx-auto py-10">
-      <div className="space-y-4 mb-8">
+      <div className="space-y-4 mb-8 text-center">
         <h1 className="text-3xl font-bold font-headline">Find a Medical Practitioner</h1>
-        <p className="text-muted-foreground">Search for GPs, clinics, and specialists across Ireland.</p>
-        <div className="flex flex-col md:flex-row gap-4">
-          <Input placeholder="Enter your location (e.g., Dublin, Cork)" className="max-w-sm" />
+        <p className="text-muted-foreground max-w-2xl mx-auto">Search for GPs, clinics, and specialists across Ireland. We'll help you find the right care, close to home.</p>
+        <div className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto">
+          <Input placeholder="Enter your location (e.g., Dublin, Cork)" className="flex-1" />
           <Select>
             <SelectTrigger className="w-full md:w-[280px]">
               <SelectValue placeholder="Filter by Health Plan" />
@@ -96,7 +96,7 @@ export default function FindPractitionerPage() {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {practitioners.map((p, index) => (
-          <Card key={index} className="flex flex-col">
+          <Card key={index} className="flex flex-col hover:shadow-lg transition-shadow duration-300">
             <CardHeader className="flex flex-row items-start gap-4">
               <Avatar className="w-16 h-16 border">
                 <AvatarImage src={p.avatar} alt={p.name} data-ai-hint={p.avatarHint} />
