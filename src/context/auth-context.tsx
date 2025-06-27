@@ -2,29 +2,58 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
 
-interface AuthContextType {
-  user: User | null;
-  loading: boolean;
+// This is a mock User type. In a real app, this would likely come from Firebase.
+interface MockUser {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
 }
 
-const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
+interface AuthContextType {
+  user: MockUser | null;
+  loading: boolean;
+  login: (email: string) => void;
+  logout: () => void;
+}
+
+const AuthContext = createContext<AuthContextType>({ 
+  user: null, 
+  loading: true,
+  login: () => {}, 
+  logout: () => {} 
+});
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<MockUser | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Simulate an initial authentication check.
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    // In a real app, you might check localStorage or sessionStorage for a token.
+    // For this prototype, we'll just start with no user.
+    setLoading(false);
   }, []);
+
+  // Mock login function
+  const login = (email: string) => {
+    // Create a mock user object.
+    const mockUser: MockUser = {
+      uid: 'mock-user-id-' + Math.random(),
+      email: email,
+      displayName: email.split('@')[0], // Create a display name from the email
+      photoURL: null, // No photo for mock users
+    };
+    setUser(mockUser);
+  };
+
+  // Mock logout function
+  const logout = () => {
+    setUser(null);
+  };
+
 
   if (loading) {
     return (
@@ -35,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

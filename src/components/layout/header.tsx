@@ -2,26 +2,20 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, Stethoscope } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/auth-context';
-import { auth } from '@/lib/firebase';
 
 const Header = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const router = useRouter();
   const isLoggedIn = !!user;
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      router.push('/login');
-    } catch (error) {
-      console.error("Logout Error:", error);
-    }
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
   };
 
   const navLinks = [
