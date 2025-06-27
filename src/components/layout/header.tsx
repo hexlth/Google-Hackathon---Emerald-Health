@@ -58,8 +58,9 @@ const Header = () => {
         "sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-sm"
     )}>
       <div className="container flex h-16 items-center">
-        <div className="mr-4 flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
+        {/* Left Section */}
+        <div className="flex flex-1 items-center justify-start">
+          <Link href="/" className="flex items-center space-x-2">
             <Stethoscope className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block">
               Emerald Health
@@ -67,6 +68,7 @@ const Header = () => {
           </Link>
         </div>
 
+        {/* Center Section: Desktop Navigation */}
         <nav className="hidden items-center space-x-6 text-sm font-medium md:flex">
           {navLinks.map(link => (
             <Link key={link.href} href={link.href} className="transition-colors hover:text-primary text-foreground/60">
@@ -75,6 +77,7 @@ const Header = () => {
           ))}
         </nav>
         
+        {/* Right Section: Auth & Mobile Menu */}
         <div className="flex flex-1 items-center justify-end space-x-2">
             <div className="hidden md:flex items-center gap-2">
                 {isLoggedIn ? (
