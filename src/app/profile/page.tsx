@@ -13,39 +13,61 @@ import { User, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 
+// Define a type for the profile data to ensure consistency
+type UserProfileData = {
+  fullName: string;
+  gpName: string;
+  gpContact: string;
+  clinicName: string;
+  clinicContact: string;
+  gpEmail: string;
+  healthPlan: string;
+};
+
+const LOCAL_STORAGE_KEY = 'emerald-health-profile';
+
 export default function ProfilePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  const [fullName, setFullName] = useState("");
-  const [gpName, setGpName] = useState("");
-  const [gpContact, setGpContact] = useState("");
-  const [clinicName, setClinicName] = useState("");
-  const [clinicContact, setClinicContact] = useState("");
-  const [gpEmail, setGpEmail] = useState("");
-  const [healthPlan, setHealthPlan] = useState("public");
-
+  const [profileData, setProfileData] = useState<UserProfileData>({
+    fullName: "",
+    gpName: "",
+    gpContact: "",
+    clinicName: "",
+    clinicContact: "",
+    gpEmail: "",
+    healthPlan: "public",
+  });
+  
+  // This effect handles authentication check and loading data from localStorage
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login');
+      return;
     }
+    
     if (user) {
-      setFullName(user.displayName || "");
-      // In a real app, you would fetch and set the other user details from your database.
+        // Load data from localStorage
+        const savedDataRaw = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (savedDataRaw) {
+            const savedData = JSON.parse(savedDataRaw) as UserProfileData;
+            setProfileData(savedData);
+        } else {
+            // If no saved data, initialize full name from auth context
+            setProfileData(prev => ({ ...prev, fullName: user.displayName || "" }));
+        }
     }
   }, [user, loading, router]);
 
+  const handleInputChange = (field: keyof UserProfileData, value: string) => {
+    setProfileData(prev => ({ ...prev, [field]: value }));
+  };
+
   const handleSaveChanges = () => {
-    // In a real app, you would save this data to your database (e.g., Firestore).
-    console.log("Saving data:", {
-      fullName,
-      gpName,
-      gpContact,
-      clinicName,
-      clinicContact,
-      gpEmail,
-      healthPlan,
-    });
+    // Save the current state of profile data to localStorage
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(profileData));
+    
     toast({
       title: "Profile Saved!",
       description: "Your information has been updated successfully.",
@@ -81,7 +103,7 @@ export default function ProfilePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+                  <Input id="name" value={profileData.fullName} onChange={(e) => handleInputChange('fullName', e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address</Label>
@@ -97,23 +119,23 @@ export default function ProfilePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                 <div className="space-y-2">
                   <Label htmlFor="gp-name">Your GP's Name</Label>
-                  <Input id="gp-name" placeholder="e.g. Dr. Jane Smith" value={gpName} onChange={(e) => setGpName(e.target.value)} />
+                  <Input id="gp-name" placeholder="e.g. Dr. Jane Smith" value={profileData.gpName} onChange={(e) => handleInputChange('gpName', e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="gp-contact">GP's Contact Number</Label>
-                  <Input id="gp-contact" placeholder="e.g. +353 1 234 5678" value={gpContact} onChange={(e) => setGpContact(e.target.value)} />
+                  <Input id="gp-contact" placeholder="e.g. +353 1 234 5678" value={profileData.gpContact} onChange={(e) => handleInputChange('gpContact', e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="clinic-name">Preferred Clinic Name</Label>
-                  <Input id="clinic-name" placeholder="e.g. The Dublin Clinic" value={clinicName} onChange={(e) => setClinicName(e.target.value)} />
+                  <Input id="clinic-name" placeholder="e.g. The Dublin Clinic" value={profileData.clinicName} onChange={(e) => handleInputChange('clinicName', e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="clinic-contact">Clinic's Contact Number</Label>
-                  <Input id="clinic-contact" placeholder="e.g. +353 1 876 5432" value={clinicContact} onChange={(e) => setClinicContact(e.target.value)} />
+                  <Input id="clinic-contact" placeholder="e.g. +353 1 876 5432" value={profileData.clinicContact} onChange={(e) => handleInputChange('clinicContact', e.target.value)} />
                 </div>
                 <div className="space-y-2 md:col-span-2">
                   <Label htmlFor="gp-email">GP's Email Address</Label>
-                  <Input id="gp-email" type="email" placeholder="e.g. dr.jane.smith@health.ie" value={gpEmail} onChange={(e) => setGpEmail(e.target.value)} />
+                  <Input id="gp-email" type="email" placeholder="e.g. dr.jane.smith@health.ie" value={profileData.gpEmail} onChange={(e) => handleInputChange('gpEmail', e.target.value)} />
                 </div>
               </div>
             </div>
@@ -123,7 +145,7 @@ export default function ProfilePage() {
               <Separator />
               <div className="space-y-2 pt-2">
                 <Label htmlFor="health-plan">Select your primary health plan</Label>
-                <Select value={healthPlan} onValueChange={setHealthPlan}>
+                <Select value={profileData.healthPlan} onValueChange={(value) => handleInputChange('healthPlan', value)}>
                   <SelectTrigger id="health-plan" className="w-full md:w-1/2">
                     <SelectValue placeholder="Select a plan" />
                   </SelectTrigger>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -25,12 +25,25 @@ const symptomCheckerSchema = z.object({
 
 type SymptomCheckerFormValues = z.infer<typeof symptomCheckerSchema>;
 
+const LOCAL_STORAGE_KEY = 'emerald-health-profile';
+
 export default function SymptomCheckerPage() {
   const [analysis, setAnalysis] = useState<DetectSeverityOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [gpEmail] = useState("dr.jane.smith@health.ie"); // Mock GP email for prototype
+  const [gpEmail, setGpEmail] = useState<string | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Load GP email from localStorage on the client side
+    const savedDataRaw = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (savedDataRaw) {
+        const savedData = JSON.parse(savedDataRaw);
+        if (savedData.gpEmail) {
+            setGpEmail(savedData.gpEmail);
+        }
+    }
+  }, []);
 
   const form = useForm<SymptomCheckerFormValues>({
     resolver: zodResolver(symptomCheckerSchema),
