@@ -16,6 +16,12 @@ const DetectSeverityInputSchema = z.object({
   symptoms: z
     .string()
     .describe('A description of the symptoms experienced by the user.'),
+  photoDataUri: z
+    .string()
+    .optional()
+    .describe(
+      "An optional photo of the symptom, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+    ),
 });
 export type DetectSeverityInput = z.infer<typeof DetectSeverityInputSchema>;
 
@@ -50,6 +56,11 @@ const detectSeverityPrompt = ai.definePrompt({
 
   Based on the following description of symptoms:
   """{{symptoms}}"""
+
+  {{#if photoDataUri}}
+  Also consider the attached photo for your analysis:
+  {{media url=photoDataUri}}
+  {{/if}}
 
   Determine if the symptoms suggest a serious condition. Set the isSerious field to true if they do, and false if they do not.
 

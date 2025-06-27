@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { FileText, Heart, Loader2, Siren } from "lucide-react";
+import { FileText, Heart, Loader2, Siren, ImageIcon, X } from "lucide-react";
 
 import { detectSeverity, DetectSeverityOutput } from "@/ai/flows/detect-severity";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
+import { Input } from "@/components/ui/input";
 
 const symptomCheckerSchema = z.object({
   symptoms: z.string().min(10, {
@@ -26,6 +28,7 @@ type SymptomCheckerFormValues = z.infer<typeof symptomCheckerSchema>;
 export default function SymptomCheckerPage() {
   const [analysis, setAnalysis] = useState<DetectSeverityOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
 
   const form = useForm<SymptomCheckerFormValues>({
@@ -35,12 +38,34 @@ export default function SymptomCheckerPage() {
     },
   });
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        toast({
+            variant: "destructive",
+            title: "File too large",
+            description: "Please upload an image smaller than 10MB.",
+        });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   async function onSubmit(data: SymptomCheckerFormValues) {
     setIsLoading(true);
     setAnalysis(null);
 
     try {
-      const result = await detectSeverity({ symptoms: data.symptoms });
+      const result = await detectSeverity({ 
+        symptoms: data.symptoms,
+        photoDataUri: imagePreview || undefined,
+      });
       setAnalysis(result);
     } catch (e) {
       toast({
@@ -87,6 +112,47 @@ export default function SymptomCheckerPage() {
                       </FormItem>
                     )}
                   />
+
+                  <div className="space-y-2">
+                    <FormLabel>Upload a Photo (Optional)</FormLabel>
+                    <div className="relative flex flex-col items-center justify-center w-full p-6 transition-colors border-2 border-dashed rounded-lg cursor-pointer border-muted-foreground/30 hover:border-primary">
+                        <Input
+                            id="symptom-photo"
+                            type="file"
+                            accept="image/*"
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            onChange={handleImageChange}
+                            disabled={isLoading}
+                        />
+                        {imagePreview ? (
+                            <div className="relative">
+                                <Image src={imagePreview} alt="Symptom preview" width={200} height={200} className="object-contain rounded-md max-h-[200px]" />
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute top-0 right-0 w-6 h-6 rounded-full bg-card/50 hover:bg-card"
+                                    onClick={() => {
+                                        setImagePreview(null);
+                                        const fileInput = document.getElementById('symptom-photo') as HTMLInputElement;
+                                        if (fileInput) fileInput.value = "";
+                                    }}
+                                >
+                                    <X className="w-4 h-4" />
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="text-center">
+                                <ImageIcon className="w-10 h-10 mx-auto text-muted-foreground" />
+                                <p className="mt-2 text-sm text-muted-foreground">
+                                    <span className="font-semibold text-primary">Click to upload</span> or drag & drop
+                                </p>
+                                <p className="text-xs text-muted-foreground">Helps the AI provide a more accurate analysis.</p>
+                            </div>
+                        )}
+                    </div>
+                  </div>
+
                   <Button type="submit" disabled={isLoading} className="w-full">
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Analyze Symptoms
