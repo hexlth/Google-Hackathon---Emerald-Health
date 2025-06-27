@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { FileText, Heart, Loader2, Siren, ImageIcon, X } from "lucide-react";
+import { FileText, Heart, Loader2, Siren, ImageIcon, X, Mail } from "lucide-react";
 
 import { detectSeverity, DetectSeverityOutput } from "@/ai/flows/detect-severity";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,7 @@ export default function SymptomCheckerPage() {
   const [analysis, setAnalysis] = useState<DetectSeverityOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [gpEmail] = useState("dr.jane.smith@health.ie"); // Mock GP email for prototype
   const { toast } = useToast();
 
   const form = useForm<SymptomCheckerFormValues>({
@@ -78,6 +79,31 @@ export default function SymptomCheckerPage() {
       setIsLoading(false);
     }
   }
+
+  const handleEmailGp = () => {
+    if (!gpEmail) {
+      toast({
+        variant: "destructive",
+        title: "No GP Email Found",
+        description: (
+          <p>
+            Please add your GP's email address in your <Link href="/profile" className="underline">Profile</Link>.
+          </p>
+        ),
+      });
+      return;
+    }
+
+    const subject = "Symptom Checker Results";
+    let body = `Hello,\n\nI used the Emerald Health symptom checker and wanted to share the results.\n\n`;
+    body += `My symptoms: ${form.getValues("symptoms")}\n\n`;
+    if (analysis?.explanation) {
+        body += `AI Analysis: ${analysis.explanation}\n\n`;
+    }
+    body += 'Thank you.';
+
+    window.location.href = `mailto:${gpEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
   
   const suggestImmediateAction = analysis?.suggestImmediateAction;
 
@@ -182,7 +208,7 @@ export default function SymptomCheckerPage() {
                         <Siren className="h-4 w-4" />
                         <AlertTitle>Immediate Action Suggested</AlertTitle>
                         <AlertDescription>
-                          Based on your symptoms, we recommend seeking medical attention promptly. You can find a practitioner or view your saved contacts below.
+                          Based on your symptoms, we recommend seeking medical attention promptly. You can find a practitioner or contact your GP below.
                         </AlertDescription>
                       </Alert>
                     )}
@@ -202,8 +228,9 @@ export default function SymptomCheckerPage() {
                     <Button asChild>
                         <Link href="/find-practitioner">Find a Practitioner</Link>
                     </Button>
-                    <Button variant="outline" asChild>
-                        <Link href="/profile">View My GP</Link>
+                    <Button variant="outline" onClick={handleEmailGp}>
+                        <Mail className="mr-2 h-4 w-4" />
+                        Email My GP
                     </Button>
                 </CardFooter>
             )}

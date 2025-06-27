@@ -59,6 +59,10 @@ export default function ProfilePage() {
                     <Label htmlFor="clinic-contact">Clinic's Contact Number</Label>
                     <Input id="clinic-contact" placeholder="e.g. +353 1 876 5432" />
                 </div>
+                <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="gp-email">GP's Email Address</Label>
+                    <Input id="gp-email" type="email" placeholder="e.g. dr.jane.smith@health.ie" />
+                </div>
                 </div>
             </div>
 
