@@ -1,10 +1,11 @@
+
 "use client";
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Stethoscope } from 'lucide-react';
+import { Menu, Stethoscope, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/auth-context';
 
@@ -22,10 +23,6 @@ const Header = () => {
     { href: "/symptom-checker", label: "Symptom Checker" },
     { href: "/find-practitioner", label: "Find a Practitioner" },
   ];
-
-  if (isLoggedIn) {
-    navLinks.push({ href: "/profile", label: "Profile" });
-  }
 
   return (
     <header className={cn(
@@ -52,7 +49,15 @@ const Header = () => {
         <div className="flex flex-1 items-center justify-end space-x-2">
             <div className="hidden md:flex items-center gap-2">
                 {isLoggedIn ? (
-                  <Button variant="ghost" onClick={handleLogout}>Logout</Button>
+                  <>
+                    <Button variant="ghost" onClick={handleLogout}>Logout</Button>
+                    <Button variant="ghost" size="icon" asChild>
+                      <Link href="/profile">
+                        <User className="h-5 w-5" />
+                        <span className="sr-only">Profile</span>
+                      </Link>
+                    </Button>
+                  </>
                 ) : (
                 <>
                     <Button variant="ghost" asChild>
@@ -90,7 +95,15 @@ const Header = () => {
                   </div>
                   <div className="border-t pt-4 mt-4 p-4">
                     {isLoggedIn ? (
-                        <Button variant="outline" className="w-full" onClick={handleLogout}>Logout</Button>
+                        <div className="flex items-center gap-2">
+                            <Button variant="outline" className="w-full" onClick={handleLogout}>Logout</Button>
+                            <Button variant="default" size="icon" asChild>
+                                <Link href="/profile">
+                                    <User className="h-5 w-5" />
+                                    <span className="sr-only">Profile</span>
+                                </Link>
+                            </Button>
+                        </div>
                     ) : (
                         <div className="flex flex-col gap-2">
                             <Button variant="ghost" asChild>
