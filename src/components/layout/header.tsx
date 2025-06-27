@@ -4,10 +4,21 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { Menu, Stethoscope, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/auth-context';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { ProfileForm } from '@/components/profile-form';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -23,6 +34,24 @@ const Header = () => {
     { href: "/symptom-checker", label: "Symptom Checker" },
     { href: "/find-practitioner", label: "Find a Practitioner" },
   ];
+
+  const profileDialogContent = (
+    <DialogContent className="sm:max-w-[725px]">
+      <DialogHeader className="text-center">
+        <Avatar className="h-24 w-24 mx-auto mb-4 border-4 border-primary/20">
+            <AvatarImage src={user?.photoURL || "https://placehold.co/100x100.png"} alt="User avatar" data-ai-hint="user profile photo" />
+            <AvatarFallback>
+                <User className="h-12 w-12" />
+            </AvatarFallback>
+        </Avatar>
+        <DialogTitle className="text-3xl">Your Profile</DialogTitle>
+        <DialogDescription>
+            Keep your information up-to-date for a seamless experience.
+        </DialogDescription>
+      </DialogHeader>
+      <ProfileForm />
+    </DialogContent>
+  );
 
   return (
     <header className={cn(
@@ -51,12 +80,15 @@ const Header = () => {
                 {isLoggedIn ? (
                   <>
                     <Button variant="ghost" onClick={handleLogout}>Logout</Button>
-                    <Button variant="ghost" size="icon" asChild>
-                      <Link href="/profile">
-                        <User className="h-5 w-5" />
-                        <span className="sr-only">Profile</span>
-                      </Link>
-                    </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <User className="h-5 w-5" />
+                          <span className="sr-only">Profile</span>
+                        </Button>
+                      </DialogTrigger>
+                      {profileDialogContent}
+                    </Dialog>
                   </>
                 ) : (
                 <>
@@ -87,31 +119,44 @@ const Header = () => {
                     </Link>
                     <nav className="flex flex-col gap-4">
                         {navLinks.map(link => (
-                        <Link key={link.href} href={link.href} className="block px-2 py-1 text-lg">
-                            {link.label}
-                        </Link>
+                        <SheetClose asChild key={link.href}>
+                            <Link href={link.href} className="block px-2 py-1 text-lg">
+                                {link.label}
+                            </Link>
+                        </SheetClose>
                         ))}
                     </nav>
                   </div>
                   <div className="border-t pt-4 mt-4 p-4">
                     {isLoggedIn ? (
                         <div className="flex items-center gap-2">
-                            <Button variant="outline" className="w-full" onClick={handleLogout}>Logout</Button>
-                            <Button variant="default" size="icon" asChild>
-                                <Link href="/profile">
-                                    <User className="h-5 w-5" />
-                                    <span className="sr-only">Profile</span>
-                                </Link>
-                            </Button>
+                            <SheetClose asChild>
+                              <Button variant="outline" className="w-full" onClick={handleLogout}>Logout</Button>
+                            </SheetClose>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <SheetClose asChild>
+                                  <Button variant="default" className="w-full">
+                                      <User className="mr-2 h-4 w-4" />
+                                      Profile
+                                  </Button>
+                                </SheetClose>
+                              </DialogTrigger>
+                              {profileDialogContent}
+                            </Dialog>
                         </div>
                     ) : (
                         <div className="flex flex-col gap-2">
-                            <Button variant="ghost" asChild>
-                            <Link href="/login">Login</Link>
-                            </Button>
-                            <Button asChild>
-                            <Link href="/signup">Sign Up</Link>
-                            </Button>
+                            <SheetClose asChild>
+                              <Button variant="ghost" asChild>
+                                <Link href="/login">Login</Link>
+                              </Button>
+                            </SheetClose>
+                            <SheetClose asChild>
+                              <Button asChild>
+                                <Link href="/signup">Sign Up</Link>
+                              </Button>
+                            </SheetClose>
                         </div>
                     )}
                   </div>

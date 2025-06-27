@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -64,8 +65,8 @@ export function UserAuthForm({ className, formType, ...props }: UserAuthFormProp
       description: formType === 'login' ? "Welcome back!" : "You have been successfully signed up.",
     })
     
-    // Redirect to the profile page on successful login/signup
-    router.push('/profile');
+    // Redirect to the home page on successful login/signup
+    router.push('/');
   }
 
   return (
