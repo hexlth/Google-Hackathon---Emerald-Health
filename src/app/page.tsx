@@ -1,100 +1,116 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, HeartPulse, MapPin } from 'lucide-react';
-import Image from 'next/image';
+import { HeartPulse, MessageSquare, Search, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="flex flex-col">
-      <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-background">
-        <div className="container px-4 md:px-6">
-          <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
-            <div className="flex flex-col justify-center space-y-4">
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline">
-                  Your Health, Understood.
-                </h1>
-                <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                  Emerald Health Finder uses AI to analyze your symptoms, help you understand potential health issues, and connect you with medical professionals across Ireland.
-                </p>
-              </div>
-              <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Button asChild size="lg" className="font-semibold">
-                  <Link href="/symptom-checker">Check Your Symptoms</Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="font-semibold">
-                  <Link href="/find-practitioner">Find a Practitioner</Link>
-                </Button>
-              </div>
+    <div className="flex flex-col bg-background text-foreground">
+      {/* Hero Section */}
+      <section className="w-full min-h-[70vh] flex items-center justify-center bg-gray-50 dark:bg-gray-900/50 py-20 md:py-32">
+        <div className="container px-4 md:px-6 text-center">
+          <div className="max-w-3xl mx-auto space-y-6">
+            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary">
+              Clearer Health, Quicker Answers.
+            </h1>
+            <p className="max-w-2xl mx-auto text-muted-foreground md:text-xl">
+              Emerald Health Finder uses advanced AI to understand your symptoms and helps you find the right medical professional in Ireland, effortlessly.
+            </p>
+            <div className="flex justify-center pt-4">
+              <Button asChild size="lg" className="font-semibold text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-shadow">
+                <Link href="/symptom-checker">Check Your Symptoms Now</Link>
+              </Button>
             </div>
-            <Image
-              src="https://placehold.co/600x400.png"
-              width="600"
-              height="400"
-              alt="Hero"
-              data-ai-hint="health doctor"
-              className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last lg:aspect-square"
-            />
           </div>
         </div>
       </section>
-      
-      <section className="w-full py-12 md:py-24 lg:py-32">
+
+      {/* How It Works Section */}
+      <section id="how-it-works" className="w-full py-12 md:py-24 lg:py-32">
         <div className="container px-4 md:px-6">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
-              <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">
-                Key Features
+          <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
+            <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm font-medium">
+                How It Works
+            </div>
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">
+              Your Path to Wellness in 3 Simple Steps
+            </h2>
+            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">
+              We've streamlined the process of understanding your health concerns.
+            </p>
+          </div>
+          <div className="mx-auto grid max-w-6xl items-start gap-12 sm:grid-cols-1 md:grid-cols-3">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="bg-primary/10 p-6 rounded-full">
+                <MessageSquare className="h-12 w-12 text-primary" />
               </div>
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">
-                A new way to manage your health
-              </h2>
-              <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                From symptom analysis to finding the right doctor, we provide the tools you need for peace of mind.
-              </p>
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold">1. Describe Symptoms</h3>
+                <p className="text-muted-foreground">
+                  Use our intuitive interface to tell us how you're feeling in your own words.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="bg-primary/10 p-6 rounded-full">
+                 <HeartPulse className="h-12 w-12 text-primary" />
+              </div>
+               <div className="space-y-2">
+                <h3 className="text-2xl font-bold">2. Get AI Insights</h3>
+                <p className="text-muted-foreground">
+                  Receive a preliminary analysis of potential conditions and severity, powered by AI.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col items-center text-center space-y-4">
+               <div className="bg-primary/10 p-6 rounded-full">
+                 <Search className="h-12 w-12 text-primary" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold">3. Find a Practitioner</h3>
+                <p className="text-muted-foreground">
+                  Easily find and connect with GPs, clinics, and specialists near you that fit your needs.
+                </p>
+              </div>
             </div>
           </div>
-          <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:grid-cols-3 lg:max-w-none mt-12">
-            <Card>
-              <CardHeader className="flex flex-row items-center gap-4">
-                <div className="grid gap-1">
-                  <HeartPulse className="h-10 w-10 text-primary" />
-                  <CardTitle>AI Symptom Analysis</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Describe your symptoms in plain language and our AI will provide you with a list of potential conditions and their severity.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center gap-4">
-                <div className="grid gap-1">
-                  <MapPin className="h-10 w-10 text-primary" />
-                  <CardTitle>Practitioner Locator</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Find GPs, specialists, and hospitals near you. Filter by health plans accepted, including Medical Card and private insurance.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center gap-4">
-                <div className="grid gap-1">
-                  <CheckCircle className="h-10 w-10 text-primary" />
-                  <CardTitle>Personalised & Secure</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Securely store your GP information and health plan details for quick access when you need it most.
-                </p>
-              </CardContent>
-            </Card>
+        </div>
+      </section>
+
+      {/* Trust & Security Section */}
+      <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-50 dark:bg-gray-900/50">
+        <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6 lg:gap-10">
+          <div className="space-y-3">
+            <ShieldCheck className="mx-auto h-12 w-12 text-accent" />
+            <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">
+              Your Privacy is Our Priority
+            </h2>
+            <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed">
+              We are committed to protecting your personal health information with the highest standards of security. Your data is yours, always.
+            </p>
+          </div>
+           <div className="flex justify-center">
+                <Button asChild variant="link" className="text-accent font-semibold text-lg">
+                  <Link href="/privacy">Learn about our privacy policy</Link>
+                </Button>
+            </div>
+        </div>
+      </section>
+
+       {/* Final CTA Section */}
+      <section className="w-full py-12 md:py-24 lg:py-32">
+        <div className="container px-4 md:px-6 text-center">
+          <div className="max-w-3xl mx-auto space-y-6">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">
+              Ready to Take Control of Your Health?
+            </h2>
+            <p className="max-w-2xl mx-auto text-muted-foreground md:text-xl">
+              Start your symptom check now and get the clarity you deserve.
+            </p>
+            <div className="flex justify-center pt-4">
+              <Button asChild size="lg" className="font-semibold text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-shadow">
+                <Link href="/symptom-checker">Start Symptom Check</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
