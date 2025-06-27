@@ -2,211 +2,184 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+import { findPractitioners, FindPractitionersOutput } from "@/ai/flows/find-practitioners";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Stethoscope, Hospital, User, MapPin, Phone, CheckCircle, Search, Loader2, AlertCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Stethoscope, Hospital, User, MapPin, Phone, Search, Loader2, AlertCircle } from "lucide-react";
 
-// Mock data for practitioners
-const practitioners = [
-  {
-    name: 'Dr. Aoife Murphy',
-    specialty: 'General Practitioner',
-    address: '123 O\'Connell Street, Dublin 1',
-    phone: '+353 1 234 5678',
-    avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'friendly woman doctor',
-    plans: ['public', 'medical-card', 'private'],
-  },
-  {
-    name: 'The Fitzwilliam Clinic',
-    specialty: 'Cardiology',
-    address: '45 Fitzwilliam Square, Dublin 2',
-    phone: '+353 1 876 5432',
-    avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'modern clinic building',
-    plans: ['private'],
-  },
-    {
-    name: 'VHI SwiftCare Clinic',
-    specialty: 'Urgent Care',
-    address: 'City Gate, Mahon, Cork',
-    phone: '+353 1 123 4567',
-    avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'urgent care clinic',
-    plans: ['private'],
-  },
-  {
-    name: 'Dr. Liam O\'Sullivan',
-    specialty: 'General Practitioner',
-    address: '78 Pearse Street, Cork',
-    phone: '+353 21 456 7890',
-    avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'smiling man doctor',
-    plans: ['public', 'medical-card'],
-  },
-  {
-    name: 'St. James\'s Hospital',
-    specialty: 'Emergency & General Hospital',
-    address: 'James\'s Street, Dublin 8',
-    phone: '+353 1 410 3000',
-    avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'large hospital exterior',
-    plans: ['public', 'private'],
-  },
-  {
-    name: 'Dr. Ciara Walsh',
-    specialty: 'Pediatrics',
-    address: '15 Main Street, Galway',
-    phone: '+353 91 789 1234',
-    avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'pediatrician smiling child',
-    plans: ['public', 'medical-card', 'private'],
-  },
-  {
-    name: 'Blackrock Clinic',
-    specialty: 'Multi-Discipline Hospital',
-    address: 'Rock Rd, Blackrock, Dublin',
-    phone: '+353 1 288 8755',
-    avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'private hospital entrance',
-    plans: ['private'],
-  }
-];
+const searchSchema = z.object({
+  location: z.string().min(3, {
+    message: "Please enter a location, Eircode, or address (at least 3 characters).",
+  }),
+});
 
-const planLabels: { [key: string]: string } = {
-  public: 'Public Health Service',
-  'medical-card': 'Medical Card',
-  private: 'Private Insurance'
-};
+type SearchFormValues = z.infer<typeof searchSchema>;
+type Practitioner = FindPractitionersOutput['practitioners'][0];
 
-const getIconForSpecialty = (specialty: string) => {
-    if (specialty.toLowerCase().includes('hospital')) {
-        return <Hospital className="h-5 w-5 text-muted-foreground" />;
+const getIconForSpecialty = (practitioner: Practitioner) => {
+    if (practitioner.isHospital) {
+        return <Hospital className="h-6 w-6 text-primary" />;
     }
-    if (specialty.toLowerCase().includes('practitioner')) {
-        return <Stethoscope className="h-5 w-5 text-muted-foreground" />;
+    if (practitioner.specialty.toLowerCase().includes('gp') || practitioner.specialty.toLowerCase().includes('general practitioner')) {
+        return <Stethoscope className="h-6 w-6 text-primary" />;
     }
-    return <User className="h-5 w-5 text-muted-foreground" />;
+    return <User className="h-6 w-6 text-primary" />;
 }
 
 export default function FindPractitionerPage() {
-  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
-  const [locationError, setLocationError] = useState<string | null>(null);
-  const [selectedPractitioner, setSelectedPractitioner] = useState<number | null>(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [results, setResults] = useState<FindPractitionersOutput | null>(null);
 
+  const form = useForm<SearchFormValues>({
+    resolver: zodResolver(searchSchema),
+    defaultValues: {
+      location: "",
+    },
+  });
 
-  const handleFindNearMe = () => {
-    setIsLoadingLocation(true);
-    setLocationError(null);
-    if (navigator.geolocation) {
-      // Simulate a delay for fetching location
-      setTimeout(() => {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            // In a real app, you would use these coordinates to fetch nearby practitioners
-            console.log("Lat:", position.coords.latitude, "Lng:", position.coords.longitude);
-            setIsLoadingLocation(false);
-            // Here you would filter or re-fetch practitioners based on location
-          },
-          (error) => {
-            setLocationError("Could not access your location. Please enable location permissions in your browser settings.");
-            setIsLoadingLocation(false);
-          }
-        );
-      }, 1500);
-    } else {
-      setLocationError("Geolocation is not supported by your browser.");
-      setIsLoadingLocation(false);
+  const handleSearch = async (locationQuery: string) => {
+    setIsLoading(true);
+    setError(null);
+    setResults(null);
+    try {
+      const response = await findPractitioners({ locationQuery });
+      setResults(response);
+    } catch (e) {
+      console.error(e);
+      setError("An unexpected error occurred. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const handleFindNearMe = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          // In a real app, you would reverse-geocode these coordinates.
+          // For this demo, we'll just tell the AI to use the current location.
+          handleSearch("my current location based on browser geolocation");
+        },
+        (error) => {
+          setError("Could not access your location. Please enable location permissions in your browser settings.");
+        }
+      );
+    } else {
+      setError("Geolocation is not supported by your browser.");
+    }
+  };
+
+  function onSubmit(data: SearchFormValues) {
+    handleSearch(data.location);
+  }
+
   return (
-    <div className="flex flex-col md:grid md:grid-cols-12 h-[calc(100vh-4rem)]">
-      {/* Left Panel: Search and List */}
-      <div className="md:col-span-4 lg:col-span-4 xl:col-span-3 border-r flex flex-col">
-        <div className="p-4 space-y-4 border-b">
-          <h1 className="text-2xl font-bold font-headline">Find Care</h1>
-          <div className="flex gap-2">
-            <Input placeholder="Search location or practitioner" className="flex-1" />
-            <Button variant="outline"><Search className="w-4 h-4" /></Button>
-          </div>
-          <Button className="w-full" onClick={handleFindNearMe} disabled={isLoadingLocation}>
-            {isLoadingLocation ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <MapPin className="mr-2 h-4 w-4" />
-            )}
-            Find Near Me
-          </Button>
-          {locationError && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Location Error</AlertTitle>
-              <AlertDescription>{locationError}</AlertDescription>
-            </Alert>
-          )}
+    <div className="container mx-auto py-10 px-4">
+      <div className="max-w-3xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground">Find Local Care</h1>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Enter an address, Eircode, or city to find healthcare practitioners near you.
+          </p>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-4 space-y-4">
-            {practitioners.map((p, index) => (
-              <Card 
-                key={index} 
-                onClick={() => setSelectedPractitioner(index)}
-                className={cn(
-                    "hover:shadow-md transition-all duration-200 cursor-pointer",
-                    selectedPractitioner === index ? "border-primary shadow-lg" : ""
-                )}>
+        {/* Search Form */}
+        <Card className="mb-8 shadow-lg">
+          <CardContent className="p-6">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="sr-only">Location</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                          <Input
+                            placeholder="e.g., 'D02 F205' or 'Galway City'"
+                            className="pl-10 h-12 text-base"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex flex-col sm:flex-row gap-2">
+                    <Button type="submit" disabled={isLoading} className="w-full sm:w-auto flex-grow h-12 text-base">
+                        <Search className="mr-2 h-5 w-5" />
+                        Search
+                    </Button>
+                    <Button type="button" variant="outline" onClick={handleFindNearMe} disabled={isLoading} className="w-full sm:w-auto flex-grow h-12 text-base">
+                        Use My Location
+                    </Button>
+                </div>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+
+        {/* Loading and Error States */}
+        {isLoading && (
+          <div className="flex flex-col items-center justify-center space-y-4 py-10">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <p className="text-muted-foreground">Searching for practitioners...</p>
+          </div>
+        )}
+        {error && (
+            <Alert variant="destructive" className="my-8">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Search Failed</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+            </Alert>
+        )}
+
+        {/* Results */}
+        {results && (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-center">
+              Found {results.practitioners.length} practitioners
+            </h2>
+            {results.practitioners.map((p, index) => (
+              <Card key={index} className="hover:shadow-md transition-shadow duration-200">
                 <CardHeader>
                     <div className="flex items-start gap-4">
-                        <Avatar className="w-12 h-12 border">
-                            <AvatarImage src={p.avatar} alt={p.name} data-ai-hint={p.avatarHint} />
-                            <AvatarFallback>{getIconForSpecialty(p.specialty)}</AvatarFallback>
-                        </Avatar>
+                        <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                           {getIconForSpecialty(p)}
+                        </div>
                         <div>
-                            <CardTitle className="text-base">{p.name}</CardTitle>
-                            <CardDescription className="text-xs">{p.specialty}</CardDescription>
+                            <CardTitle className="text-lg">{p.name}</CardTitle>
+                            <CardDescription>{p.specialty}</CardDescription>
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  <div className="flex items-start gap-2 text-muted-foreground">
+                <CardContent className="space-y-3 text-sm pl-16">
+                  <div className="flex items-start gap-3 text-muted-foreground">
                     <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
                     <span>{p.address}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-muted-foreground">
+                  <div className="flex items-center gap-3 text-muted-foreground">
                     <Phone className="h-4 w-4 shrink-0" />
                     <span>{p.phone}</span>
                   </div>
-                   <div className="flex flex-wrap gap-1 pt-2">
-                        {p.plans.map(plan => (
-                            <Badge key={plan} variant="secondary" className="text-xs">{planLabels[plan]}</Badge>
-                        ))}
-                    </div>
                 </CardContent>
               </Card>
             ))}
           </div>
-        </div>
-      </div>
-
-      {/* Right Panel: Map */}
-      <div className="hidden md:block md:col-span-8 lg:col-span-8 xl:col-span-9 relative bg-gray-200">
-         <Image
-            src="https://placehold.co/1600x1200.png"
-            layout="fill"
-            objectFit="cover"
-            alt="Map of Dublin showing practitioner locations with red pins"
-            data-ai-hint="dublin map pins"
-         />
-         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+        )}
       </div>
     </div>
-  )
+  );
 }
