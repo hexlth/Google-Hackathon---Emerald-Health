@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Stethoscope, Hospital, User, MapPin, Phone, CheckCircle, Search, Loader2, AlertCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Mock data for practitioners
 const practitioners = [
@@ -29,6 +30,15 @@ const practitioners = [
     phone: '+353 1 876 5432',
     avatar: 'https://placehold.co/100x100.png',
     avatarHint: 'modern clinic building',
+    plans: ['private'],
+  },
+    {
+    name: 'VHI SwiftCare Clinic',
+    specialty: 'Urgent Care',
+    address: 'City Gate, Mahon, Cork',
+    phone: '+353 1 123 4567',
+    avatar: 'https://placehold.co/100x100.png',
+    avatarHint: 'urgent care clinic',
     plans: ['private'],
   },
   {
@@ -57,6 +67,15 @@ const practitioners = [
     avatar: 'https://placehold.co/100x100.png',
     avatarHint: 'pediatrician smiling child',
     plans: ['public', 'medical-card', 'private'],
+  },
+  {
+    name: 'Blackrock Clinic',
+    specialty: 'Multi-Discipline Hospital',
+    address: 'Rock Rd, Blackrock, Dublin',
+    phone: '+353 1 288 8755',
+    avatar: 'https://placehold.co/100x100.png',
+    avatarHint: 'private hospital entrance',
+    plans: ['private'],
   }
 ];
 
@@ -79,6 +98,8 @@ const getIconForSpecialty = (specialty: string) => {
 export default function FindPractitionerPage() {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
+  const [selectedPractitioner, setSelectedPractitioner] = useState<number | null>(0);
+
 
   const handleFindNearMe = () => {
     setIsLoadingLocation(true);
@@ -135,7 +156,13 @@ export default function FindPractitionerPage() {
         <div className="flex-1 overflow-y-auto">
           <div className="p-4 space-y-4">
             {practitioners.map((p, index) => (
-              <Card key={index} className="hover:shadow-md transition-shadow duration-200 cursor-pointer">
+              <Card 
+                key={index} 
+                onClick={() => setSelectedPractitioner(index)}
+                className={cn(
+                    "hover:shadow-md transition-all duration-200 cursor-pointer",
+                    selectedPractitioner === index ? "border-primary shadow-lg" : ""
+                )}>
                 <CardHeader>
                     <div className="flex items-start gap-4">
                         <Avatar className="w-12 h-12 border">
@@ -175,13 +202,11 @@ export default function FindPractitionerPage() {
             src="https://placehold.co/1600x1200.png"
             layout="fill"
             objectFit="cover"
-            alt="Map showing practitioner locations"
-            data-ai-hint="ireland map"
+            alt="Map of Dublin showing practitioner locations with red pins"
+            data-ai-hint="dublin map pins"
          />
          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
       </div>
     </div>
   )
 }
-
-    
