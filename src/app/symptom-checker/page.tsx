@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { AlertCircle, FileText, Heart, Loader2, Siren } from "lucide-react";
+import { FileText, Heart, Loader2, Siren } from "lucide-react";
 
-import { analyzeSymptoms, AnalyzeSymptomsOutput } from "@/ai/flows/analyze-symptoms";
+import { detectSeverity, DetectSeverityOutput } from "@/ai/flows/detect-severity";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -24,7 +24,7 @@ const symptomCheckerSchema = z.object({
 type SymptomCheckerFormValues = z.infer<typeof symptomCheckerSchema>;
 
 export default function SymptomCheckerPage() {
-  const [analysis, setAnalysis] = useState<AnalyzeSymptomsOutput | null>(null);
+  const [analysis, setAnalysis] = useState<DetectSeverityOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -40,7 +40,7 @@ export default function SymptomCheckerPage() {
     setAnalysis(null);
 
     try {
-      const result = await analyzeSymptoms({ symptoms: data.symptoms });
+      const result = await detectSeverity({ symptoms: data.symptoms });
       setAnalysis(result);
     } catch (e) {
       toast({
@@ -54,7 +54,7 @@ export default function SymptomCheckerPage() {
     }
   }
   
-  const isSevere = analysis?.severity?.toLowerCase() === 'severe';
+  const suggestImmediateAction = analysis?.suggestImmediateAction;
 
   return (
     <div className="container mx-auto py-10">
@@ -111,27 +111,27 @@ export default function SymptomCheckerPage() {
               )}
               {analysis && (
                  <div className="space-y-4">
-                    {isSevere && (
+                    {suggestImmediateAction && (
                       <Alert variant="destructive">
                         <Siren className="h-4 w-4" />
-                        <AlertTitle>High Severity Detected</AlertTitle>
+                        <AlertTitle>Immediate Action Suggested</AlertTitle>
                         <AlertDescription>
-                          Based on your symptoms, we recommend seeking medical attention promptly. You can find a practitioner or view your saved contacts.
+                          Based on your symptoms, we recommend seeking medical attention promptly. You can find a practitioner or view your saved contacts below.
                         </AlertDescription>
                       </Alert>
                     )}
                     <div className="space-y-2">
-                        <h3 className="font-semibold flex items-center gap-2"><FileText className="h-5 w-5 text-primary" /> Potential Issues</h3>
-                        <p className="text-sm text-muted-foreground">{analysis.analysis}</p>
+                        <h3 className="font-semibold flex items-center gap-2"><FileText className="h-5 w-5 text-primary" /> AI Explanation</h3>
+                        <p className="text-sm text-muted-foreground">{analysis.explanation}</p>
                     </div>
                      <div className="space-y-2">
                         <h3 className="font-semibold flex items-center gap-2"><Heart className="h-5 w-5 text-primary" /> Severity Assessment</h3>
-                        <p className="text-sm text-muted-foreground capitalize">{analysis.severity}</p>
+                        <p className="text-sm text-muted-foreground capitalize">{analysis.isSerious ? "Considered Potentially Serious" : "Not Considered Serious"}</p>
                     </div>
                  </div>
               )}
             </CardContent>
-            {isSevere && (
+            {suggestImmediateAction && (
                 <CardFooter className="flex gap-2">
                     <Button asChild>
                         <Link href="/find-practitioner">Find a Practitioner</Link>
