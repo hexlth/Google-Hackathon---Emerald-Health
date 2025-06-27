@@ -4,6 +4,7 @@ import './globals.css';
 import Header from '@/components/layout/header';
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from '@/lib/utils';
+import { AuthProvider } from '@/context/auth-context';
 
 export const metadata: Metadata = {
   title: 'Emerald Health Finder',
@@ -23,9 +24,11 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
       </head>
       <body className={cn("min-h-screen bg-background font-body antialiased flex flex-col")}>
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Toaster />
+        <AuthProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

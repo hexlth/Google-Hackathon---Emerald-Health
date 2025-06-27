@@ -1,20 +1,37 @@
 "use client";
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, Stethoscope } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/auth-context';
+import { auth } from '@/lib/firebase';
 
 const Header = () => {
-  // Mock auth state - replace with real auth logic
-  const isLoggedIn = false;
+  const { user } = useAuth();
+  const router = useRouter();
+  const isLoggedIn = !!user;
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.push('/login');
+    } catch (error) {
+      console.error("Logout Error:", error);
+    }
+  };
 
   const navLinks = [
     { href: "/symptom-checker", label: "Symptom Checker" },
     { href: "/find-practitioner", label: "Find a Practitioner" },
-    { href: "/profile", label: "Profile" },
   ];
+
+  if (isLoggedIn) {
+    navLinks.push({ href: "/profile", label: "Profile" });
+  }
 
   return (
     <header className={cn(
@@ -41,7 +58,7 @@ const Header = () => {
         <div className="flex flex-1 items-center justify-end space-x-2">
             <div className="hidden md:flex items-center gap-2">
                 {isLoggedIn ? (
-                <Button variant="ghost">Logout</Button>
+                  <Button variant="ghost" onClick={handleLogout}>Logout</Button>
                 ) : (
                 <>
                     <Button variant="ghost" asChild>
@@ -79,7 +96,7 @@ const Header = () => {
                   </div>
                   <div className="border-t pt-4 mt-4 p-4">
                     {isLoggedIn ? (
-                        <Button variant="outline" className="w-full">Logout</Button>
+                        <Button variant="outline" className="w-full" onClick={handleLogout}>Logout</Button>
                     ) : (
                         <div className="flex flex-col gap-2">
                             <Button variant="ghost" asChild>
