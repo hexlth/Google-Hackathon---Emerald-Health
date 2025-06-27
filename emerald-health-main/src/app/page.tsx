@@ -11,19 +11,19 @@ const testimonials = [
     name: 'Deirdre K.',
     location: 'Dublin',
     quote: "The analysis was surprisingly accurate and helped me decide to see a doctor sooner. Incredibly helpful and gave me real peace of mind.",
-    avatarHint: 'smiling woman',
+    avatarHint: 'Irish woman',
   },
   {
     name: 'Liam G.',
     location: 'Cork',
     quote: "I used this for my dad when he was feeling unwell. It was simple to use and the practitioner finder was a fantastic, straightforward feature.",
-    avatarHint: 'smiling man glasses',
+    avatarHint: 'Irish man',
   },
   {
     name: 'Aoife M.',
     location: 'Galway',
     quote: "As a student, I can't always get a GP appointment quickly. This service is a lifesaver for getting initial advice and understanding my symptoms.",
-    avatarHint: 'young woman student',
+    avatarHint: 'young student',
   }
 ];
 
@@ -91,7 +91,7 @@ export default function Home() {
                 width={550}
                 height={550}
                 className="rounded-xl shadow-2xl"
-                data-ai-hint="map doctor locations"
+                data-ai-hint="Ireland map"
              />
           </div>
           <div className="space-y-4 md:order-first">
