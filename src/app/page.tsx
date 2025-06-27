@@ -1,30 +1,18 @@
 import { Button } from '@/components/ui/button';
-import { HeartPulse, MessageSquare, Search, Star } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const testimonials = [
   {
-    name: 'Sarah L.',
-    role: 'Mother of two',
-    quote: "As a busy mom, I don't have time to wait for appointments. This tool gave me peace of mind in minutes. It's so easy to use!",
-    avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'smiling mother'
+    name: 'Deirdre K.',
+    quote: "The analysis was surprisingly accurate and helped me decide to see a doctor sooner. Incredibly helpful and gave me real peace of mind."
   },
   {
-    name: 'Michael B.',
-    role: 'Retired Teacher',
-    quote: "I'm not the most tech-savvy person, but the instructions were clear and simple. It helped me understand my symptoms before calling my GP.",
-    avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'senior man smiling'
+    name: 'Liam G.',
+    quote: "I used this for my dad when he was feeling unwell. It was simple to use and the practitioner finder was a fantastic, straightforward feature."
   },
   {
-    name: 'David O.',
-    role: 'University Student',
-    quote: 'Quick, accurate, and pointed me to a clinic that accepted my insurance. A real lifesaver during exam season!',
-    avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'male university student'
+    name: 'Aoife M.',
+    quote: "As a student, I can't always get a GP appointment quickly. This service is a lifesaver for getting initial advice and understanding my symptoms."
   }
 ];
 
@@ -32,119 +20,46 @@ export default function Home() {
   return (
     <div className="flex flex-col bg-background text-foreground">
       {/* Hero Section */}
-      <section className="w-full bg-gray-50 dark:bg-gray-900/50">
-        <div className="container grid md:grid-cols-2 gap-8 items-center py-20 md:py-32">
-          <div className="space-y-6 text-center md:text-left">
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary">
-              Health Answers for Everyone.
+      <section className="w-full py-32 md:py-48 lg:py-64">
+        <div className="container px-4 md:px-6">
+          <div className="flex flex-col items-center space-y-6 text-center">
+            <h1 className="text-5xl font-extrabold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl/none text-foreground">
+              Your Health, Clarified.
             </h1>
-            <p className="max-w-xl text-muted-foreground md:text-xl">
-              From your little one's fever to your parent's new ache, get clear, friendly AI-powered health guidance and find trusted local practitioners.
+            <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+              Instant, AI-powered symptom analysis and practitioner connections. <br />
+              Clear answers for your peace of mind.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button asChild size="lg" className="font-semibold text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-shadow">
-                <Link href="/symptom-checker">Check Your Symptoms</Link>
+                <Link href="/symptom-checker">Check Symptoms</Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="font-semibold text-lg px-8 py-6 rounded-full">
-                <Link href="#how-it-works">Learn How It Works</Link>
+                <Link href="#how-it-works">Learn More</Link>
               </Button>
-            </div>
-          </div>
-          <div className="relative h-64 md:h-full min-h-[300px] rounded-lg overflow-hidden">
-             <Image 
-                src="https://placehold.co/600x600.png"
-                alt="A friendly doctor interacting with a multi-generational family"
-                fill
-                className="object-cover"
-                data-ai-hint="friendly doctor family"
-              />
-          </div>
-        </div>
-      </section>
-
-      {/* For Everyone Section */}
-      <section className="w-full py-12 md:py-24 lg:py-32">
-        <div className="container px-4 md:px-6">
-           <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">
-              Care for Every Stage of Life
-            </h2>
-            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">
-              We're here to help you and your loved ones, no matter the age.
-            </p>
-          </div>
-          <div className="mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="relative aspect-square rounded-lg overflow-hidden group">
-              <Image src="https://placehold.co/300x300.png" alt="Happy senior couple" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="happy senior couple" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <p className="absolute bottom-4 left-4 text-white font-bold text-lg">Seniors</p>
-            </div>
-             <div className="relative aspect-square rounded-lg overflow-hidden group">
-              <Image src="https://placehold.co/300x300.png" alt="Parents with a child" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="parents with child" />
-               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <p className="absolute bottom-4 left-4 text-white font-bold text-lg">Parents</p>
-            </div>
-             <div className="relative aspect-square rounded-lg overflow-hidden group">
-              <Image src="https://placehold.co/300x300.png" alt="Young adults" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="young adults" />
-               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <p className="absolute bottom-4 left-4 text-white font-bold text-lg">Adults</p>
-            </div>
-             <div className="relative aspect-square rounded-lg overflow-hidden group">
-              <Image src="https://placehold.co/300x300.png" alt="Teenagers smiling" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="smiling teenagers" />
-               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <p className="absolute bottom-4 left-4 text-white font-bold text-lg">Teens</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="w-full py-12 md:py-24 lg:py-32 bg-gray-50 dark:bg-gray-900/50">
+      <section id="how-it-works" className="w-full py-12 md:py-24 lg:py-32 bg-card/50">
         <div className="container px-4 md:px-6">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-            <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm font-medium">
-                How It Works
+          <div className="grid gap-12 md:grid-cols-3">
+            <div className="flex flex-col items-start space-y-4">
+              <span className="text-5xl font-bold text-primary">01</span>
+              <h3 className="text-2xl font-bold">Describe Symptoms</h3>
+              <p className="text-muted-foreground">Tell us how you're feeling in your own words. Our platform is built for natural, easy communication.</p>
             </div>
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">
-              Your Path to Wellness in 3 Simple Steps
-            </h2>
-            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">
-              We've streamlined the process of understanding your health concerns.
-            </p>
-          </div>
-          <div className="mx-auto grid max-w-6xl items-start gap-12 sm:grid-cols-1 md:grid-cols-3">
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="bg-primary/10 p-6 rounded-full">
-                <MessageSquare className="h-12 w-12 text-primary" />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-2xl font-bold">1. Describe Symptoms</h3>
-                <p className="text-muted-foreground">
-                  Use our intuitive interface to tell us how you're feeling in your own words.
-                </p>
-              </div>
+            <div className="flex flex-col items-start space-y-4">
+              <span className="text-5xl font-bold text-primary">02</span>
+              <h3 className="text-2xl font-bold">Get AI Insights</h3>
+              <p className="text-muted-foreground">Receive an instant, preliminary analysis of potential conditions and their severity, powered by advanced AI.</p>
             </div>
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="bg-primary/10 p-6 rounded-full">
-                 <HeartPulse className="h-12 w-12 text-primary" />
-              </div>
-               <div className="space-y-2">
-                <h3 className="text-2xl font-bold">2. Get AI Insights</h3>
-                <p className="text-muted-foreground">
-                  Receive a preliminary analysis of potential conditions and severity, powered by AI.
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col items-center text-center space-y-4">
-               <div className="bg-primary/10 p-6 rounded-full">
-                 <Search className="h-12 w-12 text-primary" />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-2xl font-bold">3. Find a Practitioner</h3>
-                <p className="text-muted-foreground">
-                  Easily find and connect with GPs, clinics, and specialists near you that fit your needs.
-                </p>
-              </div>
+            <div className="flex flex-col items-start space-y-4">
+              <span className="text-5xl font-bold text-primary">03</span>
+              <h3 className="text-2xl font-bold">Find a Practitioner</h3>
+              <p className="text-muted-foreground">We connect you with trusted local GPs, clinics, and specialists that match your health plan and needs.</p>
             </div>
           </div>
         </div>
@@ -153,31 +68,16 @@ export default function Home() {
       {/* Testimonials Section */}
       <section className="w-full py-12 md:py-24 lg:py-32">
         <div className="container px-4 md:px-6">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">
-              Trusted by People Across Ireland
-            </h2>
-            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">
-              See what our users have to say about their experience.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">
+            Trusted Across Ireland
+          </h2>
+          <div className="grid gap-8 md:grid-cols-3">
             {testimonials.map((testimonial, index) => (
-              <div key={index} className="bg-card border rounded-lg p-6 flex flex-col items-center text-center shadow-sm">
-                <Avatar className="w-20 h-20 mb-4 border-2 border-primary">
-                  <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint={testimonial.avatarHint} />
-                  <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="flex gap-1 text-yellow-400 mb-2">
-                  <Star className="w-5 h-5 fill-current" />
-                  <Star className="w-5 h-5 fill-current" />
-                  <Star className="w-5 h-5 fill-current" />
-                  <Star className="w-5 h-5 fill-current" />
-                  <Star className="w-5 h-5 fill-current" />
-                </div>
-                <p className="text-muted-foreground italic mb-4">&quot;{testimonial.quote}&quot;</p>
-                <h4 className="font-bold">{testimonial.name}</h4>
-                <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+              <div key={index} className="border border-border p-8 rounded-lg bg-card/50 flex flex-col justify-between">
+                <blockquote className="text-lg italic text-muted-foreground mb-6">
+                  &quot;{testimonial.quote}&quot;
+                </blockquote>
+                <p className="font-semibold text-right">- {testimonial.name}</p>
               </div>
             ))}
           </div>
@@ -185,14 +85,14 @@ export default function Home() {
       </section>
 
        {/* Final CTA Section */}
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-50 dark:bg-gray-900/50">
+      <section className="w-full py-12 md:py-24 lg:py-32 bg-card/50">
         <div className="container px-4 md:px-6 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">
-              Ready to Take the Next Step?
+            <h2 className="text-4xl font-bold tracking-tighter sm:text-6xl">
+              Ready for clarity?
             </h2>
-            <p className="max-w-2xl mx-auto text-muted-foreground md:text-xl">
-              Start your free symptom check now and get the clarity you deserve. It only takes a few minutes.
+            <p className="max-w-xl mx-auto text-muted-foreground md:text-xl">
+              Get your free, instant AI symptom analysis now. It's fast, secure, and built for you.
             </p>
             <div className="flex justify-center pt-4">
               <Button asChild size="lg" className="font-semibold text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-shadow">
