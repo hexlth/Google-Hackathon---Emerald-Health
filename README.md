@@ -1,4 +1,4 @@
-# 🩺 Emerald Health – Google Hackathon 2025 (Team 6)
+# Emerald Health – Google Hackathon 2025 (Team 6)
 
 **Emerald Health** is an AI-powered web application built during the **Google Hackathon 2025** by **Team 6**. It uses cutting-edge generative AI and location services to detect early symptoms of disease, contact local GPs and specialists instantly, and guide users toward appropriate medical care based on input and severity.
 
